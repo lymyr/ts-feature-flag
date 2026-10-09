@@ -2,12 +2,13 @@ import * as z from "zod"
 import { type Request, type Response, type NextFunction } from "express"
 import { Occupation } from "../../generated/prisma/enums.ts"
 import { prisma } from "../../lib/prisma.ts"
+import bcrypt from "bcryptjs"
 
 export class AccountValidation {
     private static userAttr = {
         username: z.string().trim()
-            .min(3, {error: "username must be at least 3 characters"})
-            .max(20, {error: "username must not exceed 20 characters"}),
+            .min(3, {error: "username must be at least 3 characters", abort: true})
+            .max(20, {error: "username must not exceed 20 characters", abort: true}),
         password: z.string().trim().min(3, {error: "password must be at least 3 characters long"}),
         confirmPassword: z.string().trim(),
         occupation: z.enum(Object.values(Occupation))
@@ -31,15 +32,42 @@ export class AccountValidation {
             path:["username"]
         })
 
-    private static loginSchema = z.object({
-        username: this.userAttr.username,
-        password: this.userAttr.password
+    private static loginSchema = z.object({ 
+        username: this.userAttr.username, 
+        password: this.userAttr.password 
     })
 
     static register = async (req: Request, res: Response, next: NextFunction) => {
         const result = await this.accSchema.safeParseAsync(req.body);
         if (!result.success)
             return res.status(400).json(z.flattenError(result.error))
+        req.body = result.data
+        next()
+    }
+
+    static login = async (req: Request, res: Response, next: NextFunction) => {
+        const result = await this.loginSchema
+            .refine(async (body) => {
+                const user = await prisma.user.findUnique({where: {username: body.username }})
+                if (!user)
+                    return false
+
+                const match = await bcrypt.compare(body.password, user.password)
+                delete (user as {password?: string}).password
+                
+                if (match) {
+                    req.user = user
+                    return true
+                }
+                return false
+                
+            }, {
+                error: "invalid login credentials"
+            })
+            .safeParseAsync(req.body);
+        if (!result.success)
+            return res.status(401).json(z.flattenError(result.error))
+        
         req.body = result.data
         next()
     }

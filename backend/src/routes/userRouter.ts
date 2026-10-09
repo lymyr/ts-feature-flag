@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { register } from "../controllers/userController.ts";
+import { login, register } from "../controllers/userController.ts";
 import { AccountValidation } from "../middleware/validation.ts";
 
 const userRouter = Router()
@@ -7,6 +7,11 @@ const userRouter = Router()
 userRouter.post("/", 
     AccountValidation.register,
     register
+)
+
+userRouter.post("/session",
+    AccountValidation.login,
+    login
 )
 
 export default userRouter

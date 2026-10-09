@@ -2,6 +2,7 @@ import request, { type Response } from "supertest"
 import { expect, test, describe, afterAll, vi, afterEach } from "vitest"
 import app from "../../src/app.ts"
 import { prisma } from "../../lib/prisma.ts"
+import jwt from "jsonwebtoken"
 
 const prismaUserMock = vi.spyOn(prisma.user, "create")
 
@@ -102,7 +103,7 @@ describe("Register", () => {
         expect(prismaUserMock).toHaveBeenCalledTimes(0)
         expect(res.status).toBe(400)
     })
-    
+
     test("invalid powerLevel", async () => {
         const res: Response = await request(app)
             .post("/user")
@@ -115,5 +116,46 @@ describe("Register", () => {
             
         expect(prismaUserMock).toHaveBeenCalledTimes(0)
         expect(res.status).toBe(400)
+    })
+})
+
+
+describe("login", () => {
+    const jwtMock = vi.spyOn(jwt, "sign")
+
+    afterEach(() => {
+        jwtMock.mockClear()
+    })
+
+    test("correct credentials", async () => {
+        jwtMock.mockImplementationOnce(() => {
+            return "token"
+        })
+        const res: Response = await request(app)
+            .post("/user/session")
+            .send({
+                username: "luffy",
+                password: "abcd123"
+            })
+        console.log(res.body)
+        expect(jwtMock).toHaveBeenCalledOnce()
+        expect(res.body.data.token).toBe("token")
+        expect(res.status).toBe(200)
+    })
+
+    test("incorrect credentials", async () => {
+        jwtMock.mockImplementationOnce(() => {
+            return "token"
+        })
+        const res: Response = await request(app)
+            .post("/user/session")
+            .send({
+                username: "luffy",
+                password: "abc123"
+            })
+
+        expect(jwtMock).toHaveBeenCalledTimes(0)
+        expect(res.body.data).toBeUndefined()
+        expect(res.status).toBe(401)
     })
 })
