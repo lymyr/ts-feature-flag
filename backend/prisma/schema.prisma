@@ -11,3 +11,54 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id         Int        @id @default(autoincrement())
+  username   String     @unique
+  password   String
+  occupation Occupation @default(citizen)
+  powerLevel Int        @default(0) @map("power_level")
+
+  @@map("user")
+}
+
+model FeatureFlag {
+  id        Int     @id @default(autoincrement())
+  name      String
+  attribute String
+  rules     Rule[]
+  isEnabled Boolean @default(false) @map("is_enabled")
+
+  @@map("feature_flag")
+}
+
+model Rule {
+  id       Int         @id @default(autoincrement())
+  value    String
+  operator Operator
+  flagId   Int         @map("flag_id")
+  flag     FeatureFlag @relation(fields: [flagId], references: [id])
+
+  @@map("rule")
+}
+
+enum Operator {
+  startsWith  @map("starts_with")
+  endsWith    @map("ends_at")
+  equal
+  notEqual    @map("not_equal")
+  lessThan    @map("less_than")
+  greaterThan @map("greater_than")
+
+  @@map("operator")
+}
+
+enum Occupation {
+  citizen
+  pirate
+  marine
+  bountyHunter @map("bounty_hunter")
+  admin
+
+  @@map("occupation")
+}
