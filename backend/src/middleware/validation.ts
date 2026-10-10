@@ -1,6 +1,6 @@
 import * as z from "zod"
 import { type Request, type Response, type NextFunction } from "express"
-import { Occupation } from "../../generated/prisma/enums.ts"
+import { Occupation, Operator } from "../../generated/prisma/enums.ts"
 import { prisma } from "../../lib/prisma.ts"
 import bcrypt from "bcryptjs"
 
@@ -84,7 +84,7 @@ export class FlagValidation {
         return true
     }, {error: "Feature flag not found"})
 
-    static id = async (req: Request, res: Response, next: NextFunction) => {
+    static validateFlagId = async (req: Request, res: Response, next: NextFunction) => {
         const result = await this.idSchema.safeParseAsync({id: req.params.flagId})
         if (!result.success) {
             let status = 400;
@@ -94,6 +94,52 @@ export class FlagValidation {
         }
 
         req.flagId = result.data.id
+        next()
+    }
+}
+
+
+export class RuleValidation {
+    private static rulesSchema = z.object({
+        rules: z.array(z.object({
+            value: z.union([z.coerce.number().int().gte(0), z.string().trim().min(1).max(50)]),
+            operator: z.enum(Object.values(Operator))
+        }))
+    }).superRefine((body, ctx) => {
+        outer: for (let i = 0; i < body.rules.length; i++) {
+            const rule = body.rules[i] as NonNullable<typeof body.rules[typeof i]>
+            if (typeof rule.value == "number" && ["endsWith", "startsWith"].includes(rule.operator)) {
+                ctx.addIssue({
+                    code: "custom",
+                    message: "number type cannot be used with endsWith and startsWith"
+                })
+            }
+            else if (typeof rule.value == "string" && ["greaterThan", "lessThan"].includes(rule.operator)) {
+                ctx.addIssue({
+                    code: "custom",
+                    message: "string type cannot be used with greaterThan and lessThan"
+                })
+            }
+
+            for (let j = i + 1; j < body.rules.length; j++) {
+                if (rule.value == body.rules[j]?.value && rule.operator == body.rules[j]?.operator) {
+                    ctx.addIssue({
+                        code: "custom",
+                        message: "duplicate rule",
+                        input: rule.value
+                    })
+                    break outer;
+                }
+                    
+            }
+        }
+    })
+
+    static validateRule = (req: Request, res: Response, next: NextFunction) => {
+        const result = this.rulesSchema.safeParse(req.body)
+        if (!result.success)
+            return res.status(400).json(z.flattenError(result.error))
+        
         next()
     }
 }

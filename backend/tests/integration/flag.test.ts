@@ -122,19 +122,196 @@ describe("flag model", () => {
 })
 
 describe("rule model", () => {
-    test.todo("add rule to a flag", () => {
-
+    let flag: Awaited<ReturnType<typeof prisma.featureFlag.create>>;
+    beforeAll(async () => {
+        flag = await prisma.featureFlag.create({
+            data: {
+                name: "good pirate",
+                isEnabled: true,
+                attribute: "username"
+            }
+        })
+        vi.spyOn(jwt, "verify").mockImplementation(() => admin)
     })
 
-    test.todo("remove rule from a flag", () => {
+    test("put rule to flag", async () => {
+        const res = await request(app)
+            .put(`/flags/${flag.id}/rules`)
+            .set("authorization", "bearer token")
+            .send({rules: [
+                    {
+                        value: "luffy",
+                        operator: "equal",
+                    }
+            ]})
         
+        expect(res.body.data.rules).toEqual(expect.any(Array))
+        expect(res.body.data.rules).toHaveLength(1)
     })
 
-    test.todo("unauthorized user", () => {
-        
+    test("put multiple rules to flag", async () => {
+        const res = await request(app)
+            .put(`/flags/${flag.id}/rules`)
+            .set("authorization", "bearer token")
+            .send({rules: [
+                {
+                    value: "zoro",
+                    operator: "equal",
+                },
+                {
+                    value: "sanji",
+                    operator: "equal",
+                },
+            ]})
+
+        expect(res.body.data.rules).toEqual(expect.any(Array))
+        expect(res.body.data.rules).toHaveLength(2)
     })
 
-    test.todo("invalid rule", () => {
-        
+    test("put number with number op", async () => {
+        const res = await request(app)
+            .put(`/flags/${flag.id}/rules`)
+            .set("authorization", "bearer token")
+            .send({rules: [
+                {
+                    value: "42",
+                    operator: "greaterThan",
+                }
+            ]})
+
+        expect(res.body.data.rules).toEqual(expect.any(Array))
+        expect(res.body.data.rules).toHaveLength(1)
     })
+
+    test("put string with string op", async () => {
+        const res = await request(app)
+            .put(`/flags/${flag.id}/rules`)
+            .set("authorization", "bearer token")
+            .send({rules: [
+                {
+                    value: "luffy",
+                    operator: "startsWith",
+                }
+            ]})
+
+        expect(res.body.data.rules).toEqual(expect.any(Array))
+        expect(res.body.data.rules).toHaveLength(1)
+    })
+
+    test("put mixed with string op", async () => {
+        const res = await request(app)
+            .put(`/flags/${flag.id}/rules`)
+            .set("authorization", "bearer token")
+            .send({rules: [
+                {
+                    value: "83luffy43",
+                    operator: "endsWith",
+                }
+            ]})
+
+        expect(res.body.data.rules).toEqual(expect.any(Array))
+        expect(res.body.data.rules).toHaveLength(1)
+    })
+
+    // kinda lazy to implement frontend if i limit rules to...
+    // one by one update ~n~
+    test.skip("update rule from flag", async () => {
+
+    })
+
+    test("remove rules from flag", async () => {
+        const res = await request(app)
+            .put(`/flags/${flag.id}/rules`)
+            .set("authorization", "bearer token")
+            .send({rules: []})
+        
+        const rules = await prisma.rule.findMany({ where: {flagId: flag.id}})
+        expect(res.body.data.rules).toEqual(expect.any(Array))
+        expect(res.body.data.rules).toHaveLength(0)
+        expect(rules).toHaveLength(0)
+    })
+
+    describe("invalid rule", () => {
+        test("unknown operator", async () => {
+            const res = await request(app)
+                .put(`/flags/${flag.id}/rules`)
+                .set("authorization", "bearer token")
+                .send({rules: [
+                    {
+                        value: "zoro",
+                        operator: "badOperator",
+                    }
+                ]})
+            expect(res.status).toBe(400)
+        })
+
+        test("duplicate rule", async () => {
+            const res = await request(app)
+                .put(`/flags/${flag.id}/rules`)
+                .set("authorization", "bearer token")
+                .send({rules: [
+                    {
+                        value: "zoro",
+                        operator: "equal",
+                    },
+                    {
+                        value: "zoro",
+                        operator: "startsWith",
+                    },
+                    {
+                        value: "zoro",
+                        operator: "endsWith",
+                    },
+                    {
+                        value: "zoro",
+                        operator: "equal",
+                    },
+                ]})
+
+            expect(res.status).toBe(400)
+        })
+
+        test("string value with number operator", async () => {
+            const res = await request(app)
+                .put(`/flags/${flag.id}/rules`)
+                .set("authorization", "bearer token")
+                .send({rules: [
+                    {
+                        value: "zoro",
+                        operator: "lessThan",
+                    }
+                ]})
+            
+            expect(res.status).toBe(400)
+        })
+
+        test("number value with string operator", async () => {
+            const res = await request(app)
+                .put(`/flags/${flag.id}/rules`)
+                .set("authorization", "bearer token")
+                .send({rules: [
+                    {
+                        value: "4",
+                        operator: "startsWith",
+                    }
+                ]})
+
+            expect(res.status).toBe(400)
+        })
+
+        test("mixed value with number operator", async () => {
+            const res = await request(app)
+                .put(`/flags/${flag.id}/rules`)
+                .set("authorization", "bearer token")
+                .send({rules: [
+                    {
+                        value: "4asd",
+                        operator: "lessThan",
+                    }
+                ]})
+
+            expect(res.status).toBe(400)
+        })
+    })
+    
 })

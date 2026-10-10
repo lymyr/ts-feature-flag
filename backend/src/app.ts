@@ -10,7 +10,7 @@ app.use(express.json())
 
 app.use("/flags", flagRouter)
 app.use("/users", userRouter)
-app.use("/", indexRouter)
+// app.use("/", indexRouter)
 
 if (process.env.NODE_ENV != "test") {
     app.listen(process.env.PORT, () => {

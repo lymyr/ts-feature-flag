@@ -5,8 +5,8 @@
   "type": "module",
   "main": "dist/app.js",
   "scripts": {
-    "test": "vitest --sequence.concurrent=false",
-    "build": "npx tsc",
+    "test": "vitest --no-file-parallelism",
+    "build": "rm -r dist ; npx tsc",
     "setup-test-db": "(export NODE_ENV=test; npx prisma db push && npx prisma generate)"
   },
   "dependencies": {

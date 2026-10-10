@@ -25,7 +25,7 @@ model User {
 model FeatureFlag {
   id        Int     @id @default(autoincrement())
   name      String
-  attribute UserAttribute?
+  attribute UserAttribute
   rules     Rule[]
   isEnabled Boolean @default(false) @map("is_enabled")
 
@@ -36,8 +36,10 @@ model Rule {
   id       Int         @id @default(autoincrement())
   value    String
   operator Operator
-  flag     FeatureFlag[]
+  flagId   Int
+  flag     FeatureFlag @relation(fields: [flagId], references: [id])
 
+  @@unique([value, flagId, operator])
   @@map("rule")
 }
 

@@ -1,8 +1,9 @@
 import { Router } from "express";
 import { createFlag, deleteFlag, getFlag, getFlags, updateFlag } from "../controllers/flagController.ts";
-import { FlagValidation } from "../middleware/validation.ts";
+import { FlagValidation, RuleValidation } from "../middleware/validation.ts";
 import isAuth from "../middleware/isAuth.ts";
 import isAdmin from "../middleware/isAdmin.ts";
+import { createUpdateRules } from "../controllers/ruleController.ts";
 
 const flagRouter = Router()
 
@@ -11,25 +12,26 @@ flagRouter.use(isAuth, isAdmin)
 flagRouter.post("/",
     createFlag
 )
-
 flagRouter.get("/",
     getFlags
 )
-
 flagRouter.put("/:flagId",
-    FlagValidation.id,
+    FlagValidation.validateFlagId,
     updateFlag
 )
-
 flagRouter.delete("/:flagId",
-    FlagValidation.id,
+    FlagValidation.validateFlagId,
     deleteFlag
 )
-
-
 flagRouter.get("/:flagId",
-    FlagValidation.id,
+    FlagValidation.validateFlagId,
     getFlag
+)
+
+flagRouter.put("/:flagId/rules",
+    RuleValidation.validateRule,
+    FlagValidation.validateFlagId,
+    createUpdateRules
 )
 
 export default flagRouter
