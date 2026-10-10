@@ -25,7 +25,7 @@ model User {
 model FeatureFlag {
   id        Int     @id @default(autoincrement())
   name      String
-  attribute String
+  attribute UserAttribute?
   rules     Rule[]
   isEnabled Boolean @default(false) @map("is_enabled")
 
@@ -36,8 +36,7 @@ model Rule {
   id       Int         @id @default(autoincrement())
   value    String
   operator Operator
-  flagId   Int         @map("flag_id")
-  flag     FeatureFlag @relation(fields: [flagId], references: [id])
+  flag     FeatureFlag[]
 
   @@map("rule")
 }
@@ -61,4 +60,13 @@ enum Occupation {
   admin
 
   @@map("occupation")
+}
+
+enum UserAttribute {
+  id
+  username
+  occupation
+  powerLevel @map("power_level")
+
+  @@map("user_attribute")
 }

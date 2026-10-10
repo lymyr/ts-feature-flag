@@ -5,8 +5,9 @@
   "type": "module",
   "main": "dist/app.js",
   "scripts": {
-    "test": "vitest",
-    "build": "npx tsc"
+    "test": "vitest --sequence.concurrent=false",
+    "build": "npx tsc",
+    "setup-test-db": "(export NODE_ENV=test; npx prisma db push && npx prisma generate)"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",

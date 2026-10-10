@@ -17,7 +17,7 @@ afterAll(async () => {
 describe("Register", () => {
     test("creates an account", async () => {
         const res: Response = await request(app)
-            .post("/user")
+            .post("/users")
             .send({
                 username: "luffy",
                 password: "abcd123",
@@ -32,7 +32,7 @@ describe("Register", () => {
 
     test("username already exists", async () => {
         const res: Response = await request(app)
-            .post("/user")
+            .post("/users")
             .send({
                 username: "luffy",
                 password: "abcd123",
@@ -47,13 +47,13 @@ describe("Register", () => {
 
     test("invalid username", async () => {
         const res: Response = await request(app)
-            .post("/user")
+            .post("/users")
             .send({
                 username: "",
                 password: "abcd123",
                 confirmPassword: "abcd123",
                 occupation: "pirate",
-                powerLevel: 0
+                powerLevel: "0"
             })
 
         expect(prismaUserMock).toHaveBeenCalledTimes(0)
@@ -62,7 +62,7 @@ describe("Register", () => {
 
     test("invalid password", async () => {
         const res: Response = await request(app)
-            .post("/user")
+            .post("/users")
             .send({
                 username: "luffy",
                 password: "",
@@ -77,13 +77,13 @@ describe("Register", () => {
 
     test("password and confirm password doesn't match", async () => {
         const res: Response = await request(app)
-            .post("/user")
+            .post("/users")
             .send({
                 username: "luffy",
                 password: "abc123",
                 confirmPassword: "123abc",
                 occupation: "pirate",
-                powerLevel: 0
+                powerLevel: "0"
             })
         
         expect(prismaUserMock).toHaveBeenCalledTimes(0)
@@ -92,12 +92,12 @@ describe("Register", () => {
 
     test("invalid occupation", async () => {
         const res: Response = await request(app)
-            .post("/user")
+            .post("/users")
             .send({
                 username: "luffy",
                 password: "abcd123",
                 occupation: "something else",
-                powerLevel: 0
+                powerLevel: "0"
             })
         
         expect(prismaUserMock).toHaveBeenCalledTimes(0)
@@ -106,12 +106,27 @@ describe("Register", () => {
 
     test("invalid powerLevel", async () => {
         const res: Response = await request(app)
-            .post("/user")
+            .post("/users")
             .send({
                 username: "luffy",
                 password: "abcd123",
                 occupation: "pirate",
-                powerLevel: -1
+                powerLevel: "-1"
+            })
+            
+        expect(prismaUserMock).toHaveBeenCalledTimes(0)
+        expect(res.status).toBe(400)
+    })
+
+    test("reject admin occupation via register", async () => {
+        const res: Response = await request(app)
+            .post("/users")
+            .send({
+                username: "maliciousAdmin",
+                password: "abcd123",
+                confirmPassword: "abcd123",
+                occupation: "admin",
+                powerLevel: "432"
             })
             
         expect(prismaUserMock).toHaveBeenCalledTimes(0)
@@ -132,12 +147,12 @@ describe("login", () => {
             return "token"
         })
         const res: Response = await request(app)
-            .post("/user/session")
+            .post("/users/session")
             .send({
                 username: "luffy",
                 password: "abcd123"
             })
-        console.log(res.body)
+        
         expect(jwtMock).toHaveBeenCalledOnce()
         expect(res.body.data.token).toBe("token")
         expect(res.status).toBe(200)
@@ -148,7 +163,7 @@ describe("login", () => {
             return "token"
         })
         const res: Response = await request(app)
-            .post("/user/session")
+            .post("/users/session")
             .send({
                 username: "luffy",
                 password: "abc123"
