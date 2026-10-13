@@ -29,8 +29,8 @@ flagRouter.get("/:flagId",
 )
 
 flagRouter.put("/:flagId/rules",
-    RuleValidation.validateRule,
     FlagValidation.validateFlagId,
+    RuleValidation.validateRule,
     createUpdateRules
 )
 

@@ -18,11 +18,11 @@ export const createFlag = async (req: Request, res: Response) => {
 }
 
 export const updateFlag = async (req: Request, res: Response) => {
-    if (!req.flagId)
+    if (!req.flag)
         return res.status(500).json({error: {message: "req.flagId is not set"}})
     
     const flag = await prisma.featureFlag.update({
-        where: { id: req.flagId },
+        where: { id: req.flag.id },
         data: {
             name: req.body.name,
             isEnabled: req.body.isEnabled,
@@ -38,12 +38,12 @@ export const updateFlag = async (req: Request, res: Response) => {
 }
 
 export const deleteFlag = async (req: Request, res:Response) => {
-    if (!req.flagId)
+    if (!req.flag)
         return res.status(500).json({error: {message: "req.flagId is not set"}})
 
     const flag = await prisma.featureFlag.delete({
         where: {
-            id: req.flagId
+            id: req.flag.id
         }
     })
 
@@ -65,11 +65,11 @@ export const getFlags = async (req: Request, res: Response) => {
 }
 
 export const getFlag = async (req: Request, res: Response) => {
-    if (!req.flagId)
+    if (!req.flag)
         return res.status(500).json({error: {message: "req.flagId is not set"}})
 
     const flag = await prisma.featureFlag.findUnique({ 
-        where: { id: req.flagId },
+        where: { id: req.flag.id },
         include: {
             rules: true
         }

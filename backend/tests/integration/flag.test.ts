@@ -122,21 +122,28 @@ describe("flag model", () => {
 })
 
 describe("rule model", () => {
-    let flag: Awaited<ReturnType<typeof prisma.featureFlag.create>>;
+    let flags: Awaited<ReturnType<typeof prisma.featureFlag.createManyAndReturn>>;
     beforeAll(async () => {
-        flag = await prisma.featureFlag.create({
-            data: {
-                name: "good pirate",
-                isEnabled: true,
-                attribute: "username"
-            }
+        flags = await prisma.featureFlag.createManyAndReturn({
+            data: [
+                {
+                    name: "good pirate",
+                    isEnabled: true,
+                    attribute: "username"
+                },
+                {
+                    name: "marine hq",
+                    isEnabled: true,
+                    attribute: "occupation"
+                },
+            ]
         })
         vi.spyOn(jwt, "verify").mockImplementation(() => admin)
     })
 
     test("put rule to flag", async () => {
         const res = await request(app)
-            .put(`/flags/${flag.id}/rules`)
+            .put(`/flags/${flags[0].id}/rules`)
             .set("authorization", "bearer token")
             .send({rules: [
                     {
@@ -151,7 +158,7 @@ describe("rule model", () => {
 
     test("put multiple rules to flag", async () => {
         const res = await request(app)
-            .put(`/flags/${flag.id}/rules`)
+            .put(`/flags/${flags[0].id}/rules`)
             .set("authorization", "bearer token")
             .send({rules: [
                 {
@@ -170,7 +177,7 @@ describe("rule model", () => {
 
     test("put number with number op", async () => {
         const res = await request(app)
-            .put(`/flags/${flag.id}/rules`)
+            .put(`/flags/${flags[0].id}/rules`)
             .set("authorization", "bearer token")
             .send({rules: [
                 {
@@ -185,7 +192,7 @@ describe("rule model", () => {
 
     test("put string with string op", async () => {
         const res = await request(app)
-            .put(`/flags/${flag.id}/rules`)
+            .put(`/flags/${flags[0].id}/rules`)
             .set("authorization", "bearer token")
             .send({rules: [
                 {
@@ -200,12 +207,27 @@ describe("rule model", () => {
 
     test("put mixed with string op", async () => {
         const res = await request(app)
-            .put(`/flags/${flag.id}/rules`)
+            .put(`/flags/${flags[0].id}/rules`)
             .set("authorization", "bearer token")
             .send({rules: [
                 {
                     value: "83luffy43",
                     operator: "endsWith",
+                }
+            ]})
+
+        expect(res.body.data.rules).toEqual(expect.any(Array))
+        expect(res.body.data.rules).toHaveLength(1)
+    })
+
+    test("accepts valid occupation", async () => {
+        const res = await request(app)
+            .put(`/flags/${flags[0].id}/rules`)
+            .set("authorization", "bearer token")
+            .send({rules: [
+                {
+                    value: "pirate",
+                    operator: "equal",
                 }
             ]})
 
@@ -221,11 +243,11 @@ describe("rule model", () => {
 
     test("remove rules from flag", async () => {
         const res = await request(app)
-            .put(`/flags/${flag.id}/rules`)
+            .put(`/flags/${flags[0].id}/rules`)
             .set("authorization", "bearer token")
             .send({rules: []})
         
-        const rules = await prisma.rule.findMany({ where: {flagId: flag.id}})
+        const rules = await prisma.rule.findMany({ where: {flagId: flags[0].id}})
         expect(res.body.data.rules).toEqual(expect.any(Array))
         expect(res.body.data.rules).toHaveLength(0)
         expect(rules).toHaveLength(0)
@@ -234,7 +256,7 @@ describe("rule model", () => {
     describe("invalid rule", () => {
         test("unknown operator", async () => {
             const res = await request(app)
-                .put(`/flags/${flag.id}/rules`)
+                .put(`/flags/${flags[0].id}/rules`)
                 .set("authorization", "bearer token")
                 .send({rules: [
                     {
@@ -247,7 +269,7 @@ describe("rule model", () => {
 
         test("duplicate rule", async () => {
             const res = await request(app)
-                .put(`/flags/${flag.id}/rules`)
+                .put(`/flags/${flags[0].id}/rules`)
                 .set("authorization", "bearer token")
                 .send({rules: [
                     {
@@ -273,7 +295,7 @@ describe("rule model", () => {
 
         test("string value with number operator", async () => {
             const res = await request(app)
-                .put(`/flags/${flag.id}/rules`)
+                .put(`/flags/${flags[0].id}/rules`)
                 .set("authorization", "bearer token")
                 .send({rules: [
                     {
@@ -287,7 +309,7 @@ describe("rule model", () => {
 
         test("number value with string operator", async () => {
             const res = await request(app)
-                .put(`/flags/${flag.id}/rules`)
+                .put(`/flags/${flags[0].id}/rules`)
                 .set("authorization", "bearer token")
                 .send({rules: [
                     {
@@ -301,7 +323,7 @@ describe("rule model", () => {
 
         test("mixed value with number operator", async () => {
             const res = await request(app)
-                .put(`/flags/${flag.id}/rules`)
+                .put(`/flags/${flags[0].id}/rules`)
                 .set("authorization", "bearer token")
                 .send({rules: [
                     {
@@ -310,6 +332,19 @@ describe("rule model", () => {
                     }
                 ]})
 
+            expect(res.status).toBe(400)
+        })
+
+        test("invalid occupation", async () => {
+            const res = await request(app)
+                .put(`/flags/${flags[1].id}/rules`)
+                .set("authorization", "bearer token")
+                .send({rules: [
+                    {
+                        value: "unknown occupation",
+                        operator: "equal",
+                    }
+                ]})
             expect(res.status).toBe(400)
         })
     })

@@ -1,5 +1,6 @@
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import { Occupation } from "../../generated/prisma/enums.ts";
+import type { prisma } from "../../lib/prisma.ts";
 interface User {
   id: number;
   username: string;
@@ -11,7 +12,7 @@ declare global {
   namespace Express {
     interface Request {
       user?: User;
-      flagId?: number;
+      flag: Awaited<ReturnType<typeof prisma.featureFlag.findUnique>>;
       decodedToken: JwtPayload
     }
     interface Response {

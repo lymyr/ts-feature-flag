@@ -77,15 +77,18 @@ export class AccountValidation {
 export class FlagValidation {
     private static idSchema = z.object({
         id: z.coerce.number().int().gte(0)
-    }).refine(async (param) => {
-        const flag = await prisma.featureFlag.findUnique({ where: { id: param.id }})
-        if (!flag)
-            return false
-        return true
-    }, {error: "Feature flag not found"})
+    })
 
     static validateFlagId = async (req: Request, res: Response, next: NextFunction) => {
-        const result = await this.idSchema.safeParseAsync({id: req.params.flagId})
+        const result = await this.idSchema
+            .refine(async (param) => {
+                const flag = await prisma.featureFlag.findUnique({ where: { id: param.id }})
+                if (!flag)
+                    return false
+                req.flag = flag
+                return true
+            }, {error: "Feature flag not found"})
+            .safeParseAsync({id: req.params.flagId})
         if (!result.success) {
             let status = 400;
             if (result.error.issues[0] && result.error.issues[0].message == "Feature flag not found")
@@ -93,7 +96,6 @@ export class FlagValidation {
             return res.status(status).json(z.flattenError(result.error))
         }
 
-        req.flagId = result.data.id
         next()
     }
 }
@@ -136,7 +138,23 @@ export class RuleValidation {
     })
 
     static validateRule = (req: Request, res: Response, next: NextFunction) => {
-        const result = this.rulesSchema.safeParse(req.body)
+        const result = this.rulesSchema
+            .refine((body) => {
+                let isValid = true;
+                if (req.flag?.attribute == "occupation") {
+                    for (let i = 0; i < body.rules.length; i++) {
+                        const rule = body.rules[i]?.value as string
+                        const occupations = Object.values(Occupation) as string[]
+                        if (!occupations.includes(rule)) 
+                            return false
+                        return true
+                    }
+                }
+                return isValid
+
+            }, {error: "invalid occupation value"})
+            .safeParse(req.body)
+
         if (!result.success)
             return res.status(400).json(z.flattenError(result.error))
         
