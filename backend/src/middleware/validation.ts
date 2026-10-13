@@ -140,17 +140,15 @@ export class RuleValidation {
     static validateRule = (req: Request, res: Response, next: NextFunction) => {
         const result = this.rulesSchema
             .refine((body) => {
-                let isValid = true;
                 if (req.flag?.attribute == "occupation") {
                     for (let i = 0; i < body.rules.length; i++) {
                         const rule = body.rules[i]?.value as string
                         const occupations = Object.values(Occupation) as string[]
                         if (!occupations.includes(rule)) 
                             return false
-                        return true
                     }
                 }
-                return isValid
+                return true
 
             }, {error: "invalid occupation value"})
             .safeParse(req.body)
