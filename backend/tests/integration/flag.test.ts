@@ -39,7 +39,6 @@ describe("flag model", () => {
             .send({
                 name: "flagName",
                 isEnabled: true,
-                attribute: "username"
             })
 
         createdFlagId = res.body.data.flag.id
@@ -54,7 +53,6 @@ describe("flag model", () => {
             .send({
                 name: "flagName",
                 isEnabled: false,
-                attribute: "username"
             })
 
         expect(res.status).toBe(200)
@@ -68,7 +66,6 @@ describe("flag model", () => {
             .send({
                 name: "flagName",
                 isEnabled: false,
-                attribute: "username"
             })
 
         expect(res.status).toBe(404)
@@ -129,12 +126,10 @@ describe("rule model", () => {
                 {
                     name: "good pirate",
                     isEnabled: true,
-                    attribute: "username"
                 },
                 {
                     name: "marine hq",
                     isEnabled: true,
-                    attribute: "occupation"
                 },
             ]
         })
@@ -149,6 +144,7 @@ describe("rule model", () => {
                     {
                         value: "luffy",
                         operator: "equal",
+                        attribute: "username"
                     }
             ]})
         
@@ -164,10 +160,12 @@ describe("rule model", () => {
                 {
                     value: "zoro",
                     operator: "equal",
+                    attribute: "username"
                 },
                 {
                     value: "sanji",
                     operator: "equal",
+                    attribute: "username"
                 },
             ]})
 
@@ -183,6 +181,7 @@ describe("rule model", () => {
                 {
                     value: "42",
                     operator: "greaterThan",
+                    attribute: "powerLevel"
                 }
             ]})
 
@@ -198,6 +197,7 @@ describe("rule model", () => {
                 {
                     value: "luffy",
                     operator: "startsWith",
+                    attribute: "username"
                 }
             ]})
 
@@ -213,6 +213,7 @@ describe("rule model", () => {
                 {
                     value: "83luffy43",
                     operator: "endsWith",
+                    attribute: "username"
                 }
             ]})
 
@@ -228,6 +229,7 @@ describe("rule model", () => {
                 {
                     value: "pirate",
                     operator: "equal",
+                    attribute: "occupation"
                 }
             ]})
 
@@ -262,6 +264,7 @@ describe("rule model", () => {
                     {
                         value: "zoro",
                         operator: "badOperator",
+                        attribute: "username"
                     }
                 ]})
             expect(res.status).toBe(400)
@@ -275,18 +278,22 @@ describe("rule model", () => {
                     {
                         value: "zoro",
                         operator: "equal",
+                        attribute: "username"
                     },
                     {
                         value: "zoro",
                         operator: "startsWith",
+                        attribute: "username"
                     },
                     {
                         value: "zoro",
                         operator: "endsWith",
+                        attribute: "username"
                     },
                     {
                         value: "zoro",
                         operator: "equal",
+                        attribute: "username"
                     },
                 ]})
 
@@ -301,6 +308,7 @@ describe("rule model", () => {
                     {
                         value: "zoro",
                         operator: "lessThan",
+                        attribute: "username"
                     }
                 ]})
             
@@ -315,6 +323,7 @@ describe("rule model", () => {
                     {
                         value: "4",
                         operator: "startsWith",
+                        attribute: "username"
                     }
                 ]})
 
@@ -329,6 +338,7 @@ describe("rule model", () => {
                     {
                         value: "4asd",
                         operator: "lessThan",
+                        attribute: "username"
                     }
                 ]})
 
@@ -343,6 +353,7 @@ describe("rule model", () => {
                     {
                         value: "unknown occupation",
                         operator: "equal",
+                        attribute: "occupation"
                     }
                 ]})
             expect(res.status).toBe(400)

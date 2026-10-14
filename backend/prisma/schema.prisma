@@ -23,21 +23,21 @@ model User {
 }
 
 model FeatureFlag {
-  id        Int           @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   name      String
-  attribute UserAttribute
   rules     Rule[]
-  isEnabled Boolean       @default(false) @map("is_enabled")
+  isEnabled Boolean @default(false) @map("is_enabled")
 
   @@map("feature_flag")
 }
 
 model Rule {
-  id       Int         @id @default(autoincrement())
-  value    String
-  operator Operator
-  flagId   Int
-  flag     FeatureFlag @relation(fields: [flagId], references: [id], onDelete: Cascade)
+  id        Int           @id @default(autoincrement())
+  attribute UserAttribute
+  value     String
+  operator  Operator
+  flagId    Int
+  flag      FeatureFlag   @relation(fields: [flagId], references: [id], onDelete: Cascade)
 
   @@unique([value, flagId, operator])
   @@map("rule")

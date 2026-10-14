@@ -1,7 +1,7 @@
 import express from "express";
-import indexRouter from "./routes/indexRouter.js";
 import userRouter from "./routes/userRouter.ts";
 import flagRouter from "./routes/flagRouter.ts";
+import clientRouter from "./routes/clientRouter.ts";
 process.loadEnvFile()
 
 const app = express()
@@ -10,7 +10,7 @@ app.use(express.json())
 
 app.use("/flags", flagRouter)
 app.use("/users", userRouter)
-// app.use("/", indexRouter)
+app.use("/client", clientRouter)
 
 if (process.env.NODE_ENV != "test") {
     app.listen(process.env.PORT, () => {

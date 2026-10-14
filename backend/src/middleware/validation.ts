@@ -1,6 +1,6 @@
 import * as z from "zod"
 import { type Request, type Response, type NextFunction } from "express"
-import { Occupation, Operator } from "../../generated/prisma/enums.ts"
+import { Occupation, Operator, UserAttribute } from "../../generated/prisma/enums.ts"
 import { prisma } from "../../lib/prisma.ts"
 import bcrypt from "bcryptjs"
 
@@ -104,8 +104,9 @@ export class FlagValidation {
 export class RuleValidation {
     private static rulesSchema = z.object({
         rules: z.array(z.object({
-            value: z.union([z.coerce.number().int().gte(0), z.string().trim().min(1).max(50)]),
-            operator: z.enum(Object.values(Operator))
+            value: z.union([z.coerce.number().int().gte(0), z.string().trim().min(1).max(50)]).nonoptional(),
+            operator: z.enum(Object.values(Operator)).nonoptional(),
+            attribute: z.enum(Object.values(UserAttribute)).nonoptional()
         }))
     }).superRefine((body, ctx) => {
         outer: for (let i = 0; i < body.rules.length; i++) {
@@ -140,8 +141,8 @@ export class RuleValidation {
     static validateRule = (req: Request, res: Response, next: NextFunction) => {
         const result = this.rulesSchema
             .refine((body) => {
-                if (req.flag?.attribute == "occupation") {
-                    for (let i = 0; i < body.rules.length; i++) {
+                for (let i = 0; i < body.rules.length; i++) {
+                    if (req.body.rules[i].attribute == "occupation") {
                         const rule = body.rules[i]?.value as string
                         const occupations = Object.values(Occupation) as string[]
                         if (!occupations.includes(rule)) 
