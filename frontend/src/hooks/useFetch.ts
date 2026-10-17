@@ -15,20 +15,23 @@ type stateType =
 
 type returnVal<T> = {
     status: stateType,
-    data?: T
+    data?: T,
+    setData: React.Dispatch<React.SetStateAction<T | undefined>>
 }
 
 export default function useFetch<T>(urlPath: string, options: RequestInit): returnVal<T>  {
     const [status, setStatus] = useState<stateType>({ state: "idle" })
     const [data, setData] = useState<T>()
+    const safeOption = JSON.stringify(options)
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setStatus({ state: "loading" });
 
+        const controller = new AbortController();
         (async () => {
             try {
-                const res = await handleFetch(urlPath, options)
+                const res = await handleFetch(urlPath, {...JSON.parse(safeOption), signal: controller.signal})
                 if (!res.headers.get("content-type")?.includes("application/json")) {
                     setStatus({ state: "error", msg: "something went wrong"})
                 }
@@ -50,6 +53,9 @@ export default function useFetch<T>(urlPath: string, options: RequestInit): retu
             }
         })()
 
-    }, [options, urlPath])
-    return { status, data }
+        return () => controller.abort()
+        
+    }, [safeOption, urlPath])
+    
+    return { status, data, setData }
 }

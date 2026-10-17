@@ -9,7 +9,7 @@ interface props<T>{
     inputAttr?: object
 }
 
-export default function InputLabel<T extends Record<string, string>>({
+export default function InputLabel<T>({
     label,
     attr,
     formData,

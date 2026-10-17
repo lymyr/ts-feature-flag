@@ -3,7 +3,6 @@ import App from "./pages/App";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Admin from "./pages/Admin";
 
 export default [
     {
@@ -21,10 +20,6 @@ export default [
             {
                 index: true,
                 element: <Home />
-            },
-            {
-                path: "admin",
-                element: <Admin />
             }
         ]
     }
