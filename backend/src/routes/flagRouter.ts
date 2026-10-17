@@ -10,12 +10,14 @@ const flagRouter = Router()
 flagRouter.use(isAuth, isAdmin)
 
 flagRouter.post("/",
+    FlagValidation.validateFlag,
     createFlag
 )
 flagRouter.get("/",
     getFlags
 )
 flagRouter.put("/:flagId",
+    FlagValidation.validateFlag,
     FlagValidation.validateFlagId,
     updateFlag
 )

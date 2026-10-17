@@ -79,6 +79,11 @@ export class FlagValidation {
         id: z.coerce.number().int().gte(0)
     })
 
+    private static flagSchema = z.object({
+        name: z.string().min(1).max(25),
+        isEnabled: z.boolean()
+    })
+
     static validateFlagId = async (req: Request, res: Response, next: NextFunction) => {
         const result = await this.idSchema
             .refine(async (param) => {
@@ -95,6 +100,27 @@ export class FlagValidation {
                 status = 404
             return res.status(status).json(z.flattenError(result.error))
         }
+
+        next()
+    }
+
+    static validateFlag = async (req: Request, res: Response, next: NextFunction) => {
+        const fs = req.method == "POST" ? 
+            this.flagSchema.superRefine(async (body, ctx) => {
+                const flags = await prisma.featureFlag.findMany({ where: { name: body.name }})
+                if (flags.length > 0)
+                    ctx.addIssue({
+                        code: "custom",
+                        message: "Flag name already taken",
+                        input: body.name,
+                        path: ["name"]
+                    })
+            })
+            : this.flagSchema
+
+        const result = await fs.safeParseAsync(req.body)
+        if (!result.success) 
+            return res.status(400).json(z.flattenError(result.error))
 
         next()
     }

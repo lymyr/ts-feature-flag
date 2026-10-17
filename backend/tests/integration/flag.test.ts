@@ -46,6 +46,18 @@ describe("flag model", () => {
         expect(res.body.data.flag).toBeDefined()
     })
 
+    test("adding flag with invalid input", async () => {
+        const res: Response = await request(app)
+            .post("/flags")
+            .set("authorization", "bearer token")
+            .send({
+                name: "fsdhtr",
+                isEnabled: "asdf",
+            })
+        expect(res.status).toBe(400)
+        expect(res.body.data).toBeUndefined()
+    })
+
     test("update flag", async () => {
         const res: Response = await request(app)
             .put(`/flags/${createdFlagId}`)
@@ -57,6 +69,19 @@ describe("flag model", () => {
 
         expect(res.status).toBe(200)
         expect(res.body.data.flag.isEnabled).toBe(false)
+    })
+
+    test("update flag with invalid input", async () => {
+        const res: Response = await request(app)
+            .put(`/flags/${createdFlagId}`)
+            .set("authorization", "bearer token")
+            .send({
+                name: "",
+                isEnabled: false,
+            })
+
+        expect(res.status).toBe(400)
+        expect(res.body.data).toBeUndefined()
     })
 
     test("update non-existing flag", async () => {

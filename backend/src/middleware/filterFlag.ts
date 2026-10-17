@@ -1,5 +1,5 @@
 import { type Request, type Response, type NextFunction } from "express"
-import { prisma } from "../../lib/prisma.js"
+import { prisma } from "../../lib/prisma.ts"
 
 export default async (req: Request, res: Response, next: NextFunction) => {
     req.flags = await getFlags(req.decodedToken)
@@ -77,6 +77,7 @@ export async function getFlags(user: Request['decodedToken']): Promise<Request['
         }
 
         if (match) {
+            // oxlint-disable-next-line no-unused-vars
             const {rules, ...noRulesFlag} = flag
             filteredFlags.push(noRulesFlag)
         }

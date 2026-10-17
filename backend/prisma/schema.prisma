@@ -24,7 +24,7 @@ model User {
 
 model FeatureFlag {
   id        Int     @id @default(autoincrement())
-  name      String
+  name      String  @unique
   rules     Rule[]
   isEnabled Boolean @default(false) @map("is_enabled")
 
