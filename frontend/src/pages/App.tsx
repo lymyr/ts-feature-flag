@@ -10,7 +10,9 @@ export default function App() {
         <>
             <TokenContext value={[token, setToken]}>
                 <Header />
-                <Outlet />
+                <main>
+                    <Outlet />
+                </main>
             </TokenContext>
         </>
     )

@@ -27,7 +27,7 @@ export default function FlagList({flags, user}: props) {
                                 {user?.occupation == "admin" &&
                                     <div>
                                         <DeleteFlag flagId={flag.id} />
-                                        <Link to={"/admin"}><button>Edit</button></Link>
+                                        <Link to={`flags/${flag.id}`}><button>Edit</button></Link>
                                     </div>
                                 }
                             </div>

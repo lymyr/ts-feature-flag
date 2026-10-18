@@ -3,6 +3,7 @@ import App from "./pages/App";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Flag from "./pages/Flag";
 
 export default [
     {
@@ -20,6 +21,10 @@ export default [
             {
                 index: true,
                 element: <Home />
+            },
+            {
+                path: "/flags/:flagId",
+                element: <Flag />
             }
         ]
     }

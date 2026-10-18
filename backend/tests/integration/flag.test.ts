@@ -214,6 +214,22 @@ describe("rule model", () => {
         expect(res.body.data.rules).toHaveLength(1)
     })
 
+    test("number value with string operator and string attribute", async () => {
+        const res = await request(app)
+            .put(`/flags/${flags[0].id}/rules`)
+            .set("authorization", "bearer token")
+            .send({rules: [
+                {
+                    value: "42",
+                    operator: "startsWith",
+                    attribute: "username"
+                }
+            ]})
+
+        expect(res.body.data.rules).toEqual(expect.any(Array))
+        expect(res.body.data.rules).toHaveLength(1)
+    })
+
     test("put string with string op", async () => {
         const res = await request(app)
             .put(`/flags/${flags[0].id}/rules`)
@@ -340,21 +356,6 @@ describe("rule model", () => {
             expect(res.status).toBe(400)
         })
 
-        test("number value with string operator", async () => {
-            const res = await request(app)
-                .put(`/flags/${flags[0].id}/rules`)
-                .set("authorization", "bearer token")
-                .send({rules: [
-                    {
-                        value: "4",
-                        operator: "startsWith",
-                        attribute: "username"
-                    }
-                ]})
-
-            expect(res.status).toBe(400)
-        })
-
         test("mixed value with number operator", async () => {
             const res = await request(app)
                 .put(`/flags/${flags[0].id}/rules`)
@@ -367,6 +368,109 @@ describe("rule model", () => {
                     }
                 ]})
 
+            expect(res.status).toBe(400)
+        })
+
+        test("mixed value with number attribute", async () => {
+            const res = await request(app)
+                .put(`/flags/${flags[0].id}/rules`)
+                .set("authorization", "bearer token")
+                .send({rules: [
+                    {
+                        value: "4asd",
+                        operator: "lessThan",
+                        attribute: "powerLevel"
+                    }
+                ]})
+            expect(res.status).toBe(400)
+        })
+
+        test("number operator with string attribute", async () => {
+            const res = await request(app)
+                .put(`/flags/${flags[0].id}/rules`)
+                .set("authorization", "bearer token")
+                .send({rules: [
+                    {
+                        value: "username",
+                        operator: "lessThan",
+                        attribute: "username"
+                    }
+                ]})
+
+            expect(res.status).toBe(400)
+        })
+
+        test("empty value with number attribute", async () => {
+            const res = await request(app)
+                .put(`/flags/${flags[0].id}/rules`)
+                .set("authorization", "bearer token")
+                .send({rules: [
+                    {
+                        value: "",
+                        operator: "equal",
+                        attribute: "powerLevel"
+                    }
+                ]})
+
+            expect(res.status).toBe(400)
+        })
+
+        test("empty value with occupation attribute", async () => {
+            const res = await request(app)
+                .put(`/flags/${flags[0].id}/rules`)
+                .set("authorization", "bearer token")
+                .send({rules: [
+                    {
+                        value: "",
+                        operator: "equal",
+                        attribute: "occupation"
+                    }
+                ]})
+
+            expect(res.status).toBe(400)
+        })
+
+        test("string operator with number attribute", async () => {
+            const res = await request(app)
+                .put(`/flags/${flags[0].id}/rules`)
+                .set("authorization", "bearer token")
+                .send({rules: [
+                    {
+                        value: "645",
+                        operator: "startsWith",
+                        attribute: "powerLevel"
+                    }
+                ]})
+
+            expect(res.status).toBe(400)
+        })
+
+        test("string value with number attribute", async () => {
+            const res = await request(app)
+                .put(`/flags/${flags[0].id}/rules`)
+                .set("authorization", "bearer token")
+                .send({rules: [
+                    {
+                        value: "fasd",
+                        operator: "equal",
+                        attribute: "powerLevel"
+                    }
+                ]})
+
+            expect(res.status).toBe(400)
+        })
+
+        test("occupation attribute with operator other than equal and notEqual", async () => {
+            const res = await request(app)
+                .put(`/flags/${flags[1].id}/rules`)
+                .set("authorization", "bearer token")
+                .send({rules: [
+                    {
+                        value: "pirate",
+                        operator: "startsWith",
+                        attribute: "occupation"
+                    }
+                ]})
             expect(res.status).toBe(400)
         })
 

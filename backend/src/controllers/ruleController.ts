@@ -13,7 +13,9 @@ export const createUpdateRules = async (req: Request, res: Response) => {
             prisma.rule.deleteMany({ where: { flagId: flag.id }}),
             prisma.rule.createManyAndReturn({
                 data: req.body.rules.map((r: object) => {
-                    return {...r, flagId: flag.id}
+                    const rule = {...r, flagId: flag.id} as {id?: string | number}
+                    delete rule.id
+                    return rule
                 }),
             })
         ] :

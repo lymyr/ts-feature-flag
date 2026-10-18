@@ -38,7 +38,7 @@ export default function useFetch<T>(urlPath: string, options: RequestInit): retu
                 else {
                     const json = await res.json()
                     if (!res.ok)
-                        setStatus({state: "error", msg: `${json}`})
+                        setStatus({state: "error", msg: `${json.error.message}`})
                     else {
                         setStatus({state: "idle"})
                         setData(json.data)

@@ -3,7 +3,7 @@ import handleFetch from "../handlers/handleFetch"
 import TokenContext from "../contexts/TokenContext"
 import FlagContext from "../contexts/FlagContext"
 
-interface handledError {
+export interface handledError {
     formErrors: string[],
     fieldErrors: {
         name: string[],

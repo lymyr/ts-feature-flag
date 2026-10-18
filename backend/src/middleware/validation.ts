@@ -130,31 +130,61 @@ export class FlagValidation {
 export class RuleValidation {
     private static rulesSchema = z.object({
         rules: z.array(z.object({
-            value: z.union([z.coerce.number().int().gte(0), z.string().trim().min(1).max(50)]).nonoptional(),
+            value: z.union([
+                z.preprocess(
+                    (val) => (typeof val === "string" && val.trim() === "" ? NaN : val), 
+                    z.coerce.number().int().gte(0)
+                ), 
+                z.string().trim().max(50)
+            ]).nonoptional(),
             operator: z.enum(Object.values(Operator)).nonoptional(),
             attribute: z.enum(Object.values(UserAttribute)).nonoptional()
         }))
     }).superRefine((body, ctx) => {
         outer: for (let i = 0; i < body.rules.length; i++) {
             const rule = body.rules[i] as NonNullable<typeof body.rules[typeof i]>
-            if (typeof rule.value == "number" && ["endsWith", "startsWith"].includes(rule.operator)) {
+            if (rule.attribute == "powerLevel" && ["endsWith", "startsWith"].includes(rule.operator)) {
                 ctx.addIssue({
                     code: "custom",
-                    message: "number type cannot be used with endsWith and startsWith"
+                    message: "Number type cannot be used with endsWith and startsWith",
+                    path: [`${i}`]
                 })
             }
             else if (typeof rule.value == "string" && ["greaterThan", "lessThan"].includes(rule.operator)) {
                 ctx.addIssue({
                     code: "custom",
-                    message: "string type cannot be used with greaterThan and lessThan"
+                    message: "String type cannot be used with greaterThan and lessThan",
+                    path: [`${i}`]
                 })
+            }
+            else if (rule.attribute == "powerLevel" && typeof rule.value == "string") {
+                ctx.addIssue({
+                    code: "custom",
+                    message: "String values cannot be used on power level",
+                    path: [`${i}`]
+                })
+            }
+            else if (rule.attribute == "occupation") {
+                const value = rule.value as string
+                const occupations = Object.values(Occupation).filter((o) => o != "admin") as string[]
+                if (!occupations.includes(value))
+                    ctx.addIssue({
+                        code: "custom",
+                        message: `Invalid occupation. Expected: ${occupations.join(" | ")}`
+                    })
+                else if (!(rule.operator == "equal" || rule.operator == "notEqual"))
+                    ctx.addIssue({
+                        code: "custom",
+                        message: `occupation attribute can only be used with equal and not equal operator`
+                    })
             }
 
             for (let j = i + 1; j < body.rules.length; j++) {
                 if (rule.value == body.rules[j]?.value && rule.operator == body.rules[j]?.operator) {
                     ctx.addIssue({
                         code: "custom",
-                        message: "duplicate rule",
+                        message: "Duplicate rule",
+                        path: [`${i}`],
                         input: rule.value
                     })
                     break outer;
@@ -182,7 +212,7 @@ export class RuleValidation {
 
         if (!result.success)
             return res.status(400).json(z.flattenError(result.error))
-        
+
         next()
     }
 }
