@@ -73,6 +73,10 @@ export async function getFlags(user: Request['decodedToken']): Promise<Request['
                         }
                     }
                 }
+                else {
+                    match = false
+                    break
+                }
             }
         }
 
