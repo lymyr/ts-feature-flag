@@ -65,7 +65,6 @@ export default function Register() {
                         <option value="marine">Marine</option>
                         <option value="bountyHunter">Bounty Hunter</option>
                     </select>
-                    <p>{formData.occupation}</p>
                     {error && typeof error != "string" && error.fieldErrors.occupation && <p>{error.fieldErrors.occupation[0]}</p>}
                 </div>
                 <div>

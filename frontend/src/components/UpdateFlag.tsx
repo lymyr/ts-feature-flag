@@ -2,17 +2,22 @@ import InputLabel from "./subcomponents/InputLabel"
 import { useContext, useState } from "react"
 import TokenContext from "../contexts/TokenContext"
 import type { handledError } from "./AddFlag";
-import type { payload } from "../pages/Flag"
+import type { payload } from "../types/flagTypes"
 import handleFetch from "../handlers/handleFetch";
+import DeleteFlag from "./DeleteFlag";
+import FlagContext from "../contexts/FlagContext";
 
 type props = {
     flag: Omit<payload["flag"], "rules">
+    index: number
+    setEdit: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function UpdateFlag({flag}: props) {
+export default function UpdateFlag({flag, index, setEdit}: props) {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<handledError | string | undefined>()
     const [token] = useContext(TokenContext) || [""]
+    const [flagPayload, setFlagPayload] = useContext(FlagContext) || [undefined, () => {}]
     
     const [formData, setFormData] = useState({
         name: flag.name,
@@ -33,7 +38,11 @@ export default function UpdateFlag({flag}: props) {
             })
             if (res.ok) {
                 setError(undefined)
-                alert("Update Success")
+                const newFlagPayload = flagPayload && flagPayload.flags ? { flags: [...flagPayload.flags]} : {flags: []}
+                const json = await res.json()
+                newFlagPayload.flags[index] = json.data.flag
+                setFlagPayload(newFlagPayload)
+                setEdit(false)
             }
             else if (res.headers.get("content-type")?.includes("application/json")) {
                 const json = await res.json()
@@ -57,49 +66,49 @@ export default function UpdateFlag({flag}: props) {
             if (loading == false)
                 await handleSubmit(e)
         }}>
-            <fieldset>
-                <legend>Flag</legend>
+            <div>
                 <div>
-                    <div>
-                        <InputLabel
-                            label="Flag Name"
-                            attr="name"
-                            inputType="text"
-                            formData={formData}
-                            setFormData={setFormData}
-                        />
-                        {
-                            typeof error != "string" && error?.fieldErrors.name && 
-                                <p>{error.fieldErrors.name[0]}</p>
-                        }
-                    </div>
-                    <div>
-                        <div>
-                            <input
-                                type="checkbox"
-                                id="isEnabled"
-                                checked={formData.isEnabled}
-                                onChange={() => setFormData({
-                                    ...formData,
-                                    isEnabled: !formData.isEnabled
-                                })}
-                            />
-                            <label htmlFor="isEnabled">Enable</label>
-                        </div>
-                        {
-                            typeof error != "string" && error?.fieldErrors.isEnabled && 
-                                <p>{error.fieldErrors.isEnabled[0]}</p>
-                        }
-                    </div>
+                    <InputLabel
+                        label="Flag Name"
+                        attr="name"
+                        inputType="text"
+                        formData={formData}
+                        setFormData={setFormData}
+                    />
                     {
-                        typeof error == "string" ? 
-                            <p>{error}</p>
-                        : error?.formErrors && error.formErrors.length > 0 &&
-                            <p>{error.formErrors[0]}</p>
+                        typeof error != "string" && error?.fieldErrors.name && 
+                            <p>{error.fieldErrors.name[0]}</p>
                     }
                 </div>
+                <div>
+                    <div>
+                        <input
+                            type="checkbox"
+                            id="isEnabled"
+                            checked={formData.isEnabled}
+                            onChange={() => setFormData({
+                                ...formData,
+                                isEnabled: !formData.isEnabled
+                            })}
+                        />
+                        <label htmlFor="isEnabled">Enable</label>
+                    </div>
+                    {
+                        typeof error != "string" && error?.fieldErrors.isEnabled && 
+                            <p>{error.fieldErrors.isEnabled[0]}</p>
+                    }
+                </div>
+                {
+                    typeof error == "string" ? 
+                        <p>{error}</p>
+                    : error?.formErrors && error.formErrors.length > 0 &&
+                        <p>{error.formErrors[0]}</p>
+                }
+            </div>
+            <div>
+                <DeleteFlag flagId={flag.id}/>
                 <button disabled={loading}>Save</button>
-            </fieldset>
+            </div>
         </form>
     )
 }

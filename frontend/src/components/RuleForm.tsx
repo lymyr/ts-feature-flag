@@ -1,8 +1,8 @@
 import { useContext, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import TokenContext from "../contexts/TokenContext";
-import type { flag } from "./FlagRules";
 import handleFetch from "../handlers/handleFetch";
+import type { payload } from "../types/flagTypes"
 
 type handledError = {
     msg?: string
@@ -10,15 +10,13 @@ type handledError = {
     formErrors?: string[]
 }
 
-type rule = flag["rules"][number]
+type rule = payload["flag"]["rules"][number]
 
 interface props {
-    flagId: flag["id"]
+    flagId: payload["flag"]["id"]
     rules: rule[]
 }
 
-
-//todo: add handle submit
 export default function RuleForm({rules, flagId} : props) {
     const [formData, setFormData] = useState({ rules })
     const [loading, setLoading] = useState(false)
