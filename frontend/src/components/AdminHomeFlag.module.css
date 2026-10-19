@@ -1,0 +1,101 @@
+.admin > button {
+    background-color: transparent;
+    border: none;
+    width: fit-content;
+    padding: 2px 8px;
+    border: 1px solid rgb(141, 141, 141);
+    border-radius: 8px;
+    font-size: 0.8rem;
+}
+
+div:has(> .admin) {
+    box-shadow: 1px 1px 4px rgb(183, 183, 183);
+    padding: 12px 12px;
+}
+
+.admin {
+    display: flex;
+    flex-direction: column;
+    gap:8px;
+}
+
+.admin > div {
+    padding: 12px;
+    border-top: 1px solid rgb(130, 130, 130);
+}
+
+.admin form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.admin form div:has(> button) {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.admin form div:has(> input[type="text"]) {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+}
+
+.admin form div:has(> input[type="checkbox"]) {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.admin:not(:has(form)) p {
+    font-size: 1.4rem;
+}
+
+.admin:not(:has(form)) a {
+    display: block;
+}
+
+.admin:not(:has(form)) a button {
+    margin-top: 16px;
+    font-size: 1.2rem;
+    padding-block: 4px;
+    width: 100%;
+
+    background-color: rgb(44, 67, 126);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.container:not(.disabled):has(> .admin) {
+    position: relative;
+}
+
+.container:not(.disabled):has(> .admin)::after {
+    position: absolute;
+    content: "✔";
+    font-size: 1rem;
+
+    --size: 28px;
+    width: var(--size);
+    height: var(--size);
+
+    color: white;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    top: -12px;
+    right: -8px;
+    
+    background-color: rgb(62, 127, 67);
+    box-shadow: 1px 2px 4px rgb(138, 138, 138);
+}
+
+@media screen and (min-width: 700px) {
+    .admin form button {
+        padding: 4px 24px;
+    }
+}

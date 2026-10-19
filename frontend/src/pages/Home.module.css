@@ -1,0 +1,14 @@
+.text {
+    font-size: 1.7rem;
+    text-align: center;
+    letter-spacing: 0.05rem;
+    opacity: 0.75;
+    margin-top: 10vh;
+}
+
+.container {
+    padding: 32px var(--inner-inline-space);
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}

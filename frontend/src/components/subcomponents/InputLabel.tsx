@@ -6,6 +6,7 @@ interface props<T>{
     inputType: "text" | "email" | "password" | "number"
     attr: keyof T
     setFormData: React.Dispatch<React.SetStateAction<T>>
+    id?: string
     inputAttr?: object
 }
 
@@ -15,17 +16,18 @@ export default function InputLabel<T>({
     formData,
     inputType,
     setFormData,
+    id,
     inputAttr
 }: props<T>) {
     return (
         <div>
             <label 
-                htmlFor={`${label.split(" ").join("-")}`}
+                htmlFor={id ? id : `${label.split(" ").join("-")}`}
             >
                 {label}
             </label>
             <input 
-                id={`${label.split(" ").join("-")}`} 
+                id={id ? id : `${label.split(" ").join("-")}`} 
                 value={formData[attr] ? formData[attr] as string : ""}
                 onChange={(e) => setFormData({
                     ...formData, 

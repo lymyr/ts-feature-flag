@@ -1,0 +1,12 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.container:not(.admin) > div {
+    font-size: 1.6rem;
+    background-color: rgb(218, 218, 218);
+    box-shadow: 1px 1px 4px rgb(110, 110, 110);
+    padding: 24px;
+}

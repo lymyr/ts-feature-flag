@@ -1,0 +1,18 @@
+.header {
+    box-shadow: 0px 1px 4px rgb(193, 193, 193);
+    
+}
+
+.header > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px var(--inner-inline-space);
+    max-width: 1920px;
+    margin: auto;
+}
+
+.header a {
+    color: black;
+    text-decoration: none;
+}

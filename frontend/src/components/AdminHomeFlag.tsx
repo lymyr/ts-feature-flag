@@ -2,6 +2,7 @@ import { useState } from "react"
 import type { payload } from "../types/flagTypes"
 import UpdateFlag from "./UpdateFlag"
 import { Link } from "react-router"
+import styles from "./AdminHomeFlag.module.css"
 
 interface props {
     isAdmin: boolean
@@ -12,20 +13,26 @@ interface props {
 export default function AdminHomeFlag({isAdmin, flag, index}: props) {
     const [edit, setEdit] = useState(false)
     return (
-        <div>
+        <div className={
+            flag.isEnabled ? `${styles.container}` : `${styles.container} ${styles.disabled}`
+        }>
             {
                 isAdmin ? 
                     (
                         edit ? 
-                            <div>
+                            <div className={styles.admin}>
                                 <button onClick={() => setEdit(false)}>X</button>
-                                <UpdateFlag flag={flag} index={index} setEdit={setEdit}/>
+                                <div>
+                                    <UpdateFlag flag={flag} index={index} setEdit={setEdit}/>
+                                </div>
                             </div>
                         :
-                            <div>
+                            <div className={styles.admin}>
                                 <button onClick={() => setEdit(true)}>Edit</button>
-                                <p>{flag.name}</p>
-                                <Link to={`/flags/${flag.id}`}><button>Rules</button></Link>
+                                <div>
+                                    <p>{flag.name}</p>
+                                    <Link to={`/flags/${flag.id}`}><button>Rules</button></Link>
+                                </div>
                             </div>
                     )
                 : 

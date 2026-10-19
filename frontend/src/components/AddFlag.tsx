@@ -2,6 +2,7 @@ import { useContext, useState } from "react"
 import handleFetch from "../handlers/handleFetch"
 import TokenContext from "../contexts/TokenContext"
 import FlagContext from "../contexts/FlagContext"
+import styles from "./AddFlag.module.css"
 
 export interface handledError {
     formErrors: string[],
@@ -67,10 +68,13 @@ export default function AddFlag() {
     }
 
     return (
-        <form onSubmit={async (e) => {
-                if (canSubmit)
-                    await handleSubmit(e)
-            }}>
+        <form 
+            onSubmit={async (e) => {
+                    if (canSubmit)
+                        await handleSubmit(e)
+            }}
+            className={styles.container}
+        >
             <div>
                 <div>
                     <div>
@@ -83,7 +87,7 @@ export default function AddFlag() {
                         />
                     </div>
                     {typeof error != "string" && error?.fieldErrors.name &&
-                        <p>{error.fieldErrors.name[0]}</p>
+                        <p className="error">{error.fieldErrors.name[0]}</p>
                     }
                 </div>
                 <div>
@@ -98,7 +102,7 @@ export default function AddFlag() {
                         <label htmlFor="isEnabled">Enable Flag</label>
                     </div>
                     {typeof error != "string" && error?.fieldErrors.isEnabled &&
-                        <p>{error.fieldErrors.isEnabled[0]}</p>
+                        <p className="error">{error.fieldErrors.isEnabled[0]}</p>
                     }
                 </div>
             </div>

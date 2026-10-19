@@ -74,6 +74,7 @@ export default function UpdateFlag({flag, index, setEdit}: props) {
                         inputType="text"
                         formData={formData}
                         setFormData={setFormData}
+                        id={`flag-name-${index}`}
                     />
                     {
                         typeof error != "string" && error?.fieldErrors.name && 
@@ -84,14 +85,14 @@ export default function UpdateFlag({flag, index, setEdit}: props) {
                     <div>
                         <input
                             type="checkbox"
-                            id="isEnabled"
+                            id={`isEnabled-${index}`}
                             checked={formData.isEnabled}
                             onChange={() => setFormData({
                                 ...formData,
                                 isEnabled: !formData.isEnabled
                             })}
                         />
-                        <label htmlFor="isEnabled">Enable</label>
+                        <label htmlFor={`isEnabled-${index}`}>Enable</label>
                     </div>
                     {
                         typeof error != "string" && error?.fieldErrors.isEnabled && 

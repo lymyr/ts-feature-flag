@@ -23,7 +23,7 @@ export default function Flag() {
                 : data &&
                     <RuleForm 
                         rules={data.flag.rules}
-                        flagId={data.flag.id}
+                        flag={data.flag}
                     />
             }
         </div>

@@ -13,11 +13,11 @@ type handledError = {
 type rule = payload["flag"]["rules"][number]
 
 interface props {
-    flagId: payload["flag"]["id"]
+    flag: payload["flag"]
     rules: rule[]
 }
 
-export default function RuleForm({rules, flagId} : props) {
+export default function RuleForm({rules, flag} : props) {
     const [formData, setFormData] = useState({ rules })
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<handledError | string | undefined>()
@@ -48,7 +48,7 @@ export default function RuleForm({rules, flagId} : props) {
     async function handleSubmit() {
         setLoading(true)
         try {
-            const res = await handleFetch(`/flags/${flagId}/rules`, {
+            const res = await handleFetch(`/flags/${flag.id}/rules`, {
                 method: "put",
                 headers: {
                     authorization: `bearer ${token}`,
@@ -86,7 +86,7 @@ export default function RuleForm({rules, flagId} : props) {
             }}
         >
             <fieldset>
-                <legend>Rules</legend>
+                <legend>{flag.name}</legend>
                 <button type="button" onClick={handleAddRule}>Add Rule</button>
                 <div>
                 {

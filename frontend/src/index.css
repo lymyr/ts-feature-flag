@@ -55,8 +55,14 @@ h1, h2, h3, h4, h5, h6 {
 
 :root {
   font-family: Arial, Helvetica, sans-serif;
+  --inner-inline-space: 24px;
 }
 
 .error {
   color: rgb(150, 26, 26);
+}
+
+main {
+  max-width: 1920px;
+  margin-inline: auto;
 }

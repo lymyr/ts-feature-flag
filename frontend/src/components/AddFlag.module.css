@@ -1,0 +1,35 @@
+.container { 
+    display: flex;
+    flex-direction: column;
+    box-shadow: 1px 1px 4px rgb(199, 199, 199);
+    padding: 24px;
+    gap: 16px;
+}
+
+.container button {
+    width: fit-content;
+    margin-left: auto;
+    padding: 4px 12px;
+    letter-spacing: 0.05rem;
+}
+
+.container > div {
+    display: flex;
+    gap: 12px;
+    align-items: end;
+    flex-wrap: wrap;
+}
+
+.container div:has(> input[type="text"]) {
+    display: flex;
+    flex-direction: column;
+}
+
+.container input[type="text"] {
+    width: fit-content;
+}
+
+.container div:has(> input[type="checkbox"]) {
+    display: flex;
+    gap: 4px
+}
