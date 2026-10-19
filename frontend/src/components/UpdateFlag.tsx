@@ -78,7 +78,7 @@ export default function UpdateFlag({flag, index, setEdit}: props) {
                     />
                     {
                         typeof error != "string" && error?.fieldErrors.name && 
-                            <p>{error.fieldErrors.name[0]}</p>
+                            <p className="error">{error.fieldErrors.name[0]}</p>
                     }
                 </div>
                 <div>
@@ -96,14 +96,14 @@ export default function UpdateFlag({flag, index, setEdit}: props) {
                     </div>
                     {
                         typeof error != "string" && error?.fieldErrors.isEnabled && 
-                            <p>{error.fieldErrors.isEnabled[0]}</p>
+                            <p className="error">{error.fieldErrors.isEnabled[0]}</p>
                     }
                 </div>
                 {
                     typeof error == "string" ? 
-                        <p>{error}</p>
+                        <p className="error">{error}</p>
                     : error?.formErrors && error.formErrors.length > 0 &&
-                        <p>{error.formErrors[0]}</p>
+                        <p className="error">{error.formErrors[0]}</p>
                 }
             </div>
             <div>

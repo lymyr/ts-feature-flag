@@ -20,6 +20,12 @@
     flex-wrap: wrap;
 }
 
+.container > div:has(p) {
+    flex-direction: column;
+    gap: 8px;
+    align-items: start;
+}
+
 .container div:has(> input[type="text"]) {
     display: flex;
     flex-direction: column;

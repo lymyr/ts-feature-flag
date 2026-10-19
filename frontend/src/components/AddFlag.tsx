@@ -108,9 +108,9 @@ export default function AddFlag() {
             </div>
             {   
                 typeof error == "string" ?
-                    <p>{error}</p>
+                    <p className="error">{error}</p>
                 : error?.formErrors &&
-                    <p>{error.formErrors[0]}</p>
+                    <p className="error">{error.formErrors[0]}</p>
             }
             <button disabled={!canSubmit}>Add Flag</button>
         </form>
