@@ -64,7 +64,7 @@ describe("Register", () => {
         const res: Response = await request(app)
             .post("/users")
             .send({
-                username: "luffy",
+                username: "invalidUser",
                 password: "",
                 confirmPassword: "",
                 occupation: "pirate",
@@ -79,7 +79,7 @@ describe("Register", () => {
         const res: Response = await request(app)
             .post("/users")
             .send({
-                username: "luffy",
+                username: "invalidUser",
                 password: "abc123",
                 confirmPassword: "123abc",
                 occupation: "pirate",
@@ -94,8 +94,9 @@ describe("Register", () => {
         const res: Response = await request(app)
             .post("/users")
             .send({
-                username: "luffy",
+                username: "invalidUser",
                 password: "abcd123",
+                confirmPassword: "abcd123",
                 occupation: "something else",
                 powerLevel: "0"
             })
@@ -108,12 +109,28 @@ describe("Register", () => {
         const res: Response = await request(app)
             .post("/users")
             .send({
-                username: "luffy",
+                username: "invalidUser",
                 password: "abcd123",
+                confirmPassword: "abcd123",
                 occupation: "pirate",
                 powerLevel: "-1"
             })
             
+        expect(prismaUserMock).toHaveBeenCalledTimes(0)
+        expect(res.status).toBe(400)
+    })
+
+    test("reject empty powerLevel", async () => {
+        const res: Response = await request(app)
+            .post("/users")
+            .send({
+                username: "invalidUser",
+                password: "abcd123",
+                confirmPassword: "abcd123",
+                occupation: "pirate",
+                powerLevel: ""
+            })
+
         expect(prismaUserMock).toHaveBeenCalledTimes(0)
         expect(res.status).toBe(400)
     })

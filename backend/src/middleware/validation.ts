@@ -11,9 +11,8 @@ export class AccountValidation {
             .max(20, {error: "username must not exceed 20 characters", abort: true}),
         password: z.string().trim().min(3, {error: "password must be at least 3 characters long"}),
         confirmPassword: z.string().trim(),
-        occupation: z.enum(Object.values(Occupation).filter((o) => o != "admin"))
-            .optional(),
-        powerLevel: z.coerce.number().int().gte(0).optional()
+        occupation: z.enum(Object.values(Occupation).filter((o) => o != "admin")).optional(),
+        powerLevel: z.preprocess((val) => {return typeof val == "string" && val.trim() === "" ? NaN : val}, z.coerce.number().int().gte(0).optional())
     }
 
     private static accSchema = z.object({...this.userAttr})
