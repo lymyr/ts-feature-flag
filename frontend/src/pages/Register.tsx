@@ -4,6 +4,7 @@ import InputLabel from "../components/subcomponents/InputLabel";
 import { Link, useNavigate } from "react-router";
 import handleRegister from "../handlers/handleRegister";
 import type { error, FormData, occupation} from "../types/registerTypes"
+import styles from "./Register.module.css"
 
 export default function Register() {
     const [formData, setFormData] = useState<FormData>({
@@ -19,9 +20,9 @@ export default function Register() {
     const nav = useNavigate()
 
     return (
-        <div>
+        <div className={styles.registerContainer}>
             <Form 
-                title="Login"
+                title="Register"
                 btnTitle="Register"
                 loading={loading}
                 onSubmit={async () => await handleRegister(formData, setFormData, setLoading, setError, nav)}
@@ -34,7 +35,7 @@ export default function Register() {
                         formData={formData}
                         setFormData={setFormData}
                     />
-                    {error && typeof error != "string" && error.fieldErrors.username && <p>{error.fieldErrors.username[0]}</p>}
+                    {error && typeof error != "string" && error.fieldErrors.username && <p className="error">{error.fieldErrors.username[0]}</p>}
                 </div>
                 <div>
                     <InputLabel 
@@ -44,7 +45,7 @@ export default function Register() {
                         formData={formData}
                         setFormData={setFormData}
                     />
-                    {error && typeof error != "string" && error.fieldErrors.password && <p>{error.fieldErrors.password[0]}</p>}
+                    {error && typeof error != "string" && error.fieldErrors.password && <p className="error">{error.fieldErrors.password[0]}</p>}
                 </div>
                 <div>
                     <InputLabel 
@@ -54,7 +55,7 @@ export default function Register() {
                         formData={formData}
                         setFormData={setFormData}
                     />
-                    {error && typeof error != "string" && error.fieldErrors.confirmPassword && <p>{error.fieldErrors.confirmPassword[0]}</p>}
+                    {error && typeof error != "string" && error.fieldErrors.confirmPassword && <p className="error">{error.fieldErrors.confirmPassword[0]}</p>}
                 </div>
                 <div>
                     <label htmlFor="occupation">Select Occupation</label>
@@ -65,7 +66,7 @@ export default function Register() {
                         <option value="marine">Marine</option>
                         <option value="bountyHunter">Bounty Hunter</option>
                     </select>
-                    {error && typeof error != "string" && error.fieldErrors.occupation && <p>{error.fieldErrors.occupation[0]}</p>}
+                    {error && typeof error != "string" && error.fieldErrors.occupation && <p className="error">{error.fieldErrors.occupation[0]}</p>}
                 </div>
                 <div>
                     <InputLabel 
@@ -76,12 +77,12 @@ export default function Register() {
                         formData={formData}
                         setFormData={setFormData}
                     />
-                    {error && typeof error != "string" && error.fieldErrors.powerLevel && <p>{error.fieldErrors.powerLevel[0]}</p>}
+                    {error && typeof error != "string" && error.fieldErrors.powerLevel && <p className="error">{error.fieldErrors.powerLevel[0]}</p>}
                 </div>
-                {error && typeof error != "string" && error.formErrors && <p>{error.formErrors[0]}</p>}
-                {error && typeof error == "string" && <p>{error}</p>}
+                {error && typeof error != "string" && error.formErrors && <p className="error">{error.formErrors[0]}</p>}
+                {error && typeof error == "string" && <p className="error">{error}</p>}
             </ Form>
-            <p>No account? Register <Link to={"/register"}>here</Link></p>
+            <p>Already have an account? Log in <Link to={"/login"}>here</Link></p>
         </div>
     )
 }

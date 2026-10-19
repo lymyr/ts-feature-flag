@@ -1,0 +1,41 @@
+.registerContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: fit-content;
+    margin: auto;
+    transform: translateY(max(calc(50vh - 50%), 0px));
+    padding: 24px;
+    box-shadow: 1px 1px 4px rgb(199, 199, 199);
+    max-width: 400px;
+}
+
+.registerContainer form > div > p {
+    font-size: 1.5rem;
+    margin: auto;
+    font-weight: 800;
+}
+
+.registerContainer div:has(div > select),
+.registerContainer div:has(div > input) {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.registerContainer div:has(> select),
+.registerContainer div:has(> input) {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.registerContainer select {
+    padding-block: 8px;
+}
+
+.registerContainer button {
+    margin-top: 12px;
+    padding: 4px;
+    font-weight: 600;
+}

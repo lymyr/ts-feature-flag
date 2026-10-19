@@ -3,6 +3,7 @@ import Form from "../components/Form";
 import InputLabel from "../components/subcomponents/InputLabel";
 import handleLogin from "../handlers/handleLogin";
 import { Link, useNavigate } from "react-router";
+import styles from "./Login.module.css"
 import type {error} from "../types/loginTypes"
 
 export default function Login() {
@@ -16,7 +17,7 @@ export default function Login() {
     const nav = useNavigate()
 
     return (
-        <div>
+        <div className={styles.loginContainer}>
             <Form 
                 title="Login"
                 btnTitle="Log in"
