@@ -7,6 +7,7 @@
   "scripts": {
     "test": "vitest --no-file-parallelism",
     "build": "rm -r dist ; npx tsc",
+    "dev": "node --watch src/app.ts",
     "setup-test-db": "(export NODE_ENV=test; npx prisma db push && npx prisma generate)"
   },
   "dependencies": {
