@@ -4,6 +4,7 @@ import { useContext } from "react";
 import TokenContext from "../contexts/TokenContext";
 import RuleForm from "../components/RuleForm";
 import type { payload } from "../types/flagTypes"
+import styles from "./Rules.module.css"
 
 export default function Flag() {
     const params = useParams()
@@ -17,9 +18,9 @@ export default function Flag() {
         <div>
             {
                 status.state == "loading" ?
-                    <p>Loading</p>
+                    <p className={styles.text}>Loading</p>
                 : status.state == "error" ?
-                    <p>{status.msg}</p>
+                    <p className={styles.text}>{status.msg}</p>
                 : data &&
                     <RuleForm 
                         rules={data.flag.rules}

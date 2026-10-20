@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import TokenContext from "../contexts/TokenContext";
 import handleFetch from "../handlers/handleFetch";
 import type { payload } from "../types/flagTypes"
+import styles from "./RuleForm.module.css"
 
 type handledError = {
     msg?: string
@@ -84,6 +85,7 @@ export default function RuleForm({rules, flag} : props) {
                 if (!loading) 
                     await handleSubmit()
             }}
+            className={styles.container}
         >
             <fieldset>
                 <legend>{flag.name}</legend>
@@ -144,7 +146,7 @@ export default function RuleForm({rules, flag} : props) {
                                     <button type="button" onClick={() => handleRemoveRule(i)}>Remove Rule</button>
                                 </div>
                                 { typeof error != "string" && error?.fieldErrors && error.fieldErrors[i] &&
-                                    <p>{error.fieldErrors[i]}</p>
+                                    <p className="error">{error.fieldErrors[i]}</p>
                                 }
                             </div>
                         )
@@ -154,11 +156,11 @@ export default function RuleForm({rules, flag} : props) {
                 {
                     error && (
                         typeof error == "string" ? 
-                            <p>{error}</p>
+                            <p className="error">{error}</p>
                         : error.msg ?
-                            <p>{error.msg}</p>
+                            <p className="error">{error.msg}</p>
                         : error.formErrors && error.formErrors.length > 0 &&
-                            <p>{error.formErrors[0]}</p>
+                            <p className="error">{error.formErrors[0]}</p>
                     )
                 }
                 <button disabled={loading}>Save</button>
