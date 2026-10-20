@@ -169,12 +169,14 @@ export class RuleValidation {
                 if (!occupations.includes(value))
                     ctx.addIssue({
                         code: "custom",
-                        message: `Invalid occupation. Expected: ${occupations.join(" | ")}`
+                        message: `Invalid occupation. Expected: ${occupations.join(" | ")}`,
+                        path: [`${i}`]
                     })
                 else if (!(rule.operator == "equal" || rule.operator == "notEqual"))
                     ctx.addIssue({
                         code: "custom",
-                        message: `occupation attribute can only be used with equal and not equal operator`
+                        message: `occupation attribute can only be used with equal and not equal operator`,
+                        path: [`${i}`]
                     })
             }
 
@@ -194,20 +196,7 @@ export class RuleValidation {
     })
 
     static validateRule = (req: Request, res: Response, next: NextFunction) => {
-        const result = this.rulesSchema
-            .refine((body) => {
-                for (let i = 0; i < body.rules.length; i++) {
-                    if (req.body.rules[i].attribute == "occupation") {
-                        const rule = body.rules[i]?.value as string
-                        const occupations = Object.values(Occupation) as string[]
-                        if (!occupations.includes(rule)) 
-                            return false
-                    }
-                }
-                return true
-
-            }, {error: "invalid occupation value"})
-            .safeParse(req.body)
+        const result = this.rulesSchema.safeParse(req.body)
 
         if (!result.success)
             return res.status(400).json(z.flattenError(result.error))
